@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>上岸雷达 · 岗位库</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #eef2f7;
+    color: #1c2430;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 22px 18px 60px; }
+
+  /* ---------- 顶部 ---------- */
+  header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+  h1 { font-size: 21px; margin: 0 0 6px; letter-spacing: .3px; }
+  .meta { font-size: 12.5px; color: #6b7889; line-height: 1.7; }
+  .meta b { color: #1e4b8f; font-weight: 600; }
+  .logout {
+    font-size: 12.5px; color: #6b7889; text-decoration: none;
+    border: 1px solid #d3dbe6; padding: 7px 14px; border-radius: 8px;
+    background: #fff; white-space: nowrap; transition: .15s;
+  }
+  .logout:hover { color: #c0392b; border-color: #e8b9b3; }
+
+  /* ---------- 统计 ---------- */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px; }
+  .stat {
+    background: #fff; border-radius: 11px; padding: 15px 17px;
+    border: 1px solid #e6ecf4;
+  }
+  .stat .n { font-size: 25px; font-weight: 700; letter-spacing: -.5px; line-height: 1.15; }
+  .stat .l { font-size: 12px; color: #7a879a; margin-top: 5px; }
+  .stat.hi .n { color: #c0392b; }
+  .stat.ok .n { color: #1e4b8f; }
+
+  .progress-bar {
+    background: #fff; border: 1px solid #e6ecf4; border-radius: 11px;
+    padding: 12px 17px; margin-bottom: 16px;
+    display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center;
+    font-size: 12.5px; color: #5b6879;
+  }
+  .progress-bar .pb-title { font-weight: 600; color: #1c2430; margin-right: 4px; }
+  .progress-bar .pb-item b { color: #1e4b8f; font-size: 14px; margin-left: 3px; }
+
+  /* ---------- 筛选 ---------- */
+  .filters {
+    background: #fff; border: 1px solid #e6ecf4; border-radius: 11px;
+    padding: 13px 15px; margin-bottom: 16px;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  }
+  .filters input[type=search],
+  .filters select {
+    font-size: 13px; padding: 8px 11px;
+    border: 1px solid #d3dbe6; border-radius: 8px;
+    background: #fbfcfe; color: #1c2430; outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .filters input[type=search]:focus,
+  .filters select:focus {
+    border-color: #2f6dbd; box-shadow: 0 0 0 3px rgba(47,109,189,.12); background: #fff;
+  }
+  .filters input[type=search] { flex: 1 1 210px; min-width: 180px; }
+  .filters select { flex: 0 0 auto; min-width: 108px; }
+  .btn-reset {
+    font-size: 13px; padding: 8px 15px; border-radius: 8px;
+    border: 1px solid #d3dbe6; background: #fff; color: #5b6879;
+    cursor: pointer; transition: .15s;
+  }
+  .btn-reset:hover { border-color: #b9c6d6; color: #1c2430; }
+  .hide-done {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; color: #5b6879; cursor: pointer; user-select: none;
+    padding: 8px 13px; border: 1px solid #d3dbe6; border-radius: 8px; background: #fff;
+  }
+  .hide-done:hover { border-color: #b9c6d6; color: #1c2430; }
+  .hide-done input { accent-color: #1e4b8f; margin: 0; cursor: pointer; }
+  .hide-done b { color: #1e4b8f; font-weight: 600; }
+  .count { font-size: 12.5px; color: #7a879a; margin-left: auto; white-space: nowrap; }
+  .count b { color: #1e4b8f; font-size: 14px; }
+
+  /* ---------- 表格 ---------- */
+  .table-card { background: #fff; border: 1px solid #e6ecf4; border-radius: 12px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: left; font-size: 12px; font-weight: 600; color: #6b7889;
+    background: #f7f9fc; padding: 11px 12px; border-bottom: 1px solid #e6ecf4;
+    white-space: nowrap; letter-spacing: .2px;
+  }
+  tbody td { padding: 13px 12px; border-bottom: 1px solid #f0f4f9; vertical-align: top; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: #fafcff; }
+
+  /* ---------- 分组分隔行（未投递优先 / 已投递沉底） ---------- */
+  tbody tr.group-sep td {
+    padding: 8px 12px 7px; background: #f2f6fc;
+    border-top: 1px solid #e2eaf5; border-bottom: 1px solid #e2eaf5;
+    font-size: 11.5px; font-weight: 700; color: #1e4b8f;
+    letter-spacing: .4px;
+  }
+  tbody tr.group-sep:hover td { background: #f2f6fc; }
+  /* 已投递 / 已结束的行整体弱化，未投递的视觉上更突出 */
+  tbody tr.row-done { opacity: .55; }
+  tbody tr.row-done:hover { opacity: 1; }
+  tbody tr.row-done .emp { font-weight: 500; color: #2c3d52; }
+
+  .tag.dir { background: #e6f4ea; color: #1f6f43; font-weight: 600; }
+  .tag.dir.sup { background: #fdf0e3; color: #a05a1a; }
+
+  .emp { font-weight: 600; font-size: 13.5px; color: #14273f; }
+  .emp-ind { font-size: 11.5px; color: #8d99aa; margin-top: 3px; }
+  .nature { font-size: 12.5px; color: #3d4a5c; }
+  .scale { font-size: 11.5px; color: #8d99aa; margin-top: 3px; }
+
+  .role { font-size: 12.5px; color: #24344a; line-height: 1.6; }
+  .tags { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag {
+    font-size: 10.5px; padding: 2px 7px; border-radius: 20px;
+    background: #eaf1fb; color: #1e4b8f; white-space: nowrap;
+  }
+  .city { font-size: 12.5px; color: #3d4a5c; line-height: 1.7; }
+  .deadline { font-size: 12px; color: #5b6879; line-height: 1.55; }
+  .deadline.soon { color: #c0392b; font-weight: 600; }
+
+  .fit { font-size: 17px; font-weight: 700; line-height: 1.1; }
+  .fit.hi { color: #c0392b; }
+  .fit.mid { color: #d68910; }
+  .fit.low { color: #7a879a; }
+  .fit-reason {
+    font-size: 11.5px; color: #8d99aa; margin-top: 5px;
+    line-height: 1.55; cursor: help;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; max-width: 260px;
+  }
+  .fit-reason.open { -webkit-line-clamp: unset; }
+
+  select.st {
+    font-size: 12px; padding: 6px 8px; border-radius: 7px;
+    border: 1px solid #d3dbe6; background: #fbfcfe; color: #1c2430;
+    cursor: pointer; outline: none; min-width: 92px;
+  }
+  select.st:focus { border-color: #2f6dbd; }
+  select.st[data-state="Offer"] { border-color: #c0392b; color: #c0392b; font-weight: 600; background: #fdf3f2; }
+  select.st[data-state="已拒绝"],
+  select.st[data-state="已放弃"] { color: #98a4b5; background: #f7f9fc; }
+  select.st[data-state="已投递"],
+  select.st[data-state="一面"],
+  select.st[data-state="二面"],
+  select.st[data-state="终面"],
+  select.st[data-state="HR面"] { border-color: #2f6dbd; color: #1e4b8f; background: #f2f7fd; font-weight: 600; }
+
+  .apply {
+    display: inline-block; font-size: 12px; font-weight: 600;
+    color: #fff; background: #1e4b8f; text-decoration: none;
+    padding: 7px 13px; border-radius: 7px; white-space: nowrap; transition: .15s;
+  }
+  .apply:hover { background: #17396e; }
+  .ops { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+  .btn-track {
+    font-size: 12px; font-weight: 600; color: #1e4b8f;
+    background: #fff; border: 1px solid #c9d8ef; border-radius: 7px;
+    padding: 6px 12px; cursor: pointer; white-space: nowrap; transition: .15s;
+  }
+  .btn-track:hover { background: #f2f7fd; border-color: #2f6dbd; }
+
+  .empty { padding: 46px 20px; text-align: center; color: #98a4b5; font-size: 13.5px; }
+
+  footer { margin-top: 20px; font-size: 11.5px; color: #98a4b5; line-height: 1.8; }
+  footer b { color: #6b7889; }
+
+  /* ---------- 移动端 ---------- */
+  @media (max-width: 900px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .table-card { background: transparent; border: 0; }
+    table, thead, tbody, th, td, tr { display: block; }
+    thead { display: none; }
+    tbody tr {
+      background: #fff; border: 1px solid #e6ecf4; border-radius: 11px;
+      padding: 14px 15px; margin-bottom: 12px;
+    }
+    tbody td {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 14px; padding: 7px 0; border-bottom: 1px dashed #eef2f7;
+    }
+    tbody td:last-child { border-bottom: 0; padding-bottom: 0; }
+    tbody td::before {
+      content: attr(data-label); flex: 0 0 68px;
+      font-size: 11.5px; font-weight: 600; color: #8d99aa; padding-top: 2px;
+    }
+    .fit-reason { max-width: none; -webkit-line-clamp: unset; text-align: right; }
+    .count { margin-left: 0; width: 100%; }
+    tbody tr.group-sep { background: transparent; border: 0; padding: 4px 0 8px; }
+    tbody tr.group-sep td { background: transparent; border: 0; padding: 4px 0; }
+    tbody tr.row-done { opacity: .6; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>上岸雷达 📡</h1>
+      <div class="meta">
+        <b id="m-candidate"></b> ·
+        方向：<b id="m-dir"></b> ·
+        城市：<b id="m-city"></b> ·
+        <a href="/setup" style="color:#1e4b8f;font-weight:600;text-decoration:none">⚙ 求职意向</a> ·
+        <a href="/tracker" style="color:#1e4b8f;font-weight:600;text-decoration:none">📌 我的投递记录 →</a>
+        <a href="/api/logout" style="color:#8d99aa;text-decoration:none;margin-left:8px">退出</a>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <a class="logout" href="javascript:void(0)" id="btn-exp">📤 导出进度</a>
+      <a class="logout" href="javascript:void(0)" id="btn-imp">📥 导入进度</a>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat ok"><div class="n" id="s-emp">–</div><div class="l">在招企业</div></div>
+    <div class="stat ok"><div class="n" id="s-cat">–</div><div class="l">覆盖岗位方向</div></div>
+    <div class="stat hi"><div class="n" id="s-hi">–</div><div class="l">高匹配（≥80 分）</div></div>
+    <div class="stat ok"><div class="n" id="s-date" style="font-size:15px;padding-top:6px">–</div><div class="l">最近核验日期</div></div>
+  </div>
+
+  <div class="progress-bar" id="pbar"></div>
+
+  <div class="filters">
+    <input type="search" id="q" placeholder="搜索企业 / 岗位 / 城市 / 行业…">
+    <select id="f-dir"><option value="">全部我的方向</option></select>
+    <select id="f-cat"><option value="">全部细分方向</option></select>
+    <select id="f-city"><option value="">全部城市</option></select>
+    <select id="f-nature"><option value="">全部性质</option></select>
+    <button class="btn-reset" id="reset">重置</button>
+    <label class="hide-done" title="标记为「已放弃」的公司默认不再显示，本机记住这个选择">
+      <input type="checkbox" id="hide-done" checked>隐藏已放弃 <b id="hidden-n"></b>
+    </label>
+    <span class="count">共 <b id="cnt">0</b> 条<span id="cap" style="color:#98a4b5;font-weight:400"></span></span>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:15%">企业</th>
+          <th style="width:12%">性质 / 规模</th>
+          <th style="width:20%">岗位</th>
+          <th style="width:9%">城市</th>
+          <th style="width:12%">截止 / 时间</th>
+          <th style="width:15%">匹配度</th>
+          <th style="width:10%">投递进度</th>
+          <th style="width:7%"></th>
+        </tr>
+      </thead>
+      <tbody id="tb"></tbody>
+    </table>
+    <div class="empty" id="empty" style="display:none">没有符合条件的岗位，试试放宽筛选条件。</div>
+  </div>
+
+  <footer>
+    数据核验日期：<b id="f-date"></b>。岗位来自两个渠道：<b>人工核验精选</b>（来源为企业官方招聘系统，企业规模不少于 500 人）与<b>飞书《27届校招汇总表》批量导入</b>（来源字段已逐条标注，未逐条核验通道状态、企业规模未标注）。<br>
+    全部岗位均要求 2027 届可投、本科可投，城市不限。方向覆盖产品 / 项目 / 运营 / 数据 / 采购 / 技术研发 / 设计 / 市场 / 销售 / 职能 / 制造 / 管培等全方向，可在上方「方向」下拉里切换。列表按<b>未投递优先</b>排序，你标记为已投递 / 流程中的岗位会自动后置并淡化显示。<br>
+    投递链接请以企业官方招聘页为准，投递前请再核对岗位是否仍开放。匹配分为规则计算，仅供参考。投递进度仅保存在本机浏览器，不会上传到任何第三方；标记为「已放弃」的公司会自动从列表隐藏（取消上方勾选即可找回）。
+  </footer>
+
+</div>
+
+<div id="imp-mask" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);align-items:center;justify-content:center;z-index:60;padding:16px;">
+  <div style="background:#fff;border-radius:12px;width:100%;max-width:540px;padding:20px 22px;">
+    <h2 id="imp-title" style="font-size:16px;margin:0 0 10px;color:#1c2430;">导入进度</h2>
+    <textarea id="imp-text" style="width:100%;box-sizing:border-box;height:180px;border:1px solid #d3dbe6;border-radius:8px;padding:10px;font-size:12px;font-family:Consolas,monospace;color:#1c2430;" placeholder='粘贴形如 {"kedacom-sz":"已投递",...} 的进度 JSON'></textarea>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:12px;">
+      <a class="logout" href="javascript:void(0)" id="imp-cancel">取消</a>
+      <a class="logout" href="javascript:void(0)" id="imp-ok" style="background:#1e4b8f;color:#fff;border-color:#1e4b8f;">确认导入</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var PAYLOAD = /*__DATA__*/;
+  var PROFILE = __PROFILE__; // 当前登录者的求职意向
+
+  var KEY_STORE = 'crd_progress_v1__' + __USER__; // 按登录账号隔离，每人进度独立
+  // 记录工具挪到 /tracker 子路径，「记一笔」跳过去带预填参数
+  var TRACKER_URL = '/tracker';
+  var progress = {};
+  try { progress = JSON.parse(localStorage.getItem(KEY_STORE) || '{}') || {}; } catch (e) { progress = {}; }
+
+  var byId = function (id) { return document.getElementById(id); };
+  var esc = function (s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  };
+
+  var records = PAYLOAD.records.slice().sort(function (a, b) { return b.fit - a.fit; });
+  var opts = PAYLOAD.progressOptions;
+  // 数据量已达千条级：单次最多渲染 300 行，其余靠搜索 / 筛选查看（避免输入时卡顿）
+  var RENDER_CAP = 300;
+
+  var MY_DIRS = PROFILE.directions || [];
+  var TAG_ORDER = ['产品类', '采购供应链类', '项目助理类', '运营类', '数据类',
+                   '技术研发类', '设计类', '市场类', '销售类', '职能类', '制造工艺类',
+                   '管培生', '其他类'];
+
+  /* ---- 方向归类：岗位分类 ∩ 我的意向方向 ---- */
+  function classify(r) {
+    var dirs = TAG_ORDER.filter(function (d) {
+      return (r.categories || []).indexOf(d) > -1;
+    });
+    return dirs;
+  }
+  records.forEach(function (r) { r._dirs = classify(r); });
+
+  /* ---- 投递进度：已投递 / 面试中的往后放，未投递优先 ---- */
+  var APPLIED_STATES = ['已投递', '待测评', '已测评', '待笔试', '已笔试', '一面', '二面', '终面', 'HR面', 'Offer'];
+  var DONE_STATES = ['已拒绝', '已放弃'];
+  function stateOf(r) { return progress[r.id] || opts[0]; }
+  function rankOf(r) {
+    var s = stateOf(r);
+    if (DONE_STATES.indexOf(s) > -1) return 2;   // 已结束的沉到最后
+    if (APPLIED_STATES.indexOf(s) > -1) return 1; // 已投递或在流程中的往后放
+    return 0;                                     // 未投递的优先显示
+  }
+
+  /* ---- 隐藏「已放弃」：默认开启，本机记住 ---- */
+  var KEY_HIDE = 'crd_hidedone_v1';
+  var HIDDEN_STATES = ['已放弃'];
+  var hideDone = true;
+  try { if (localStorage.getItem(KEY_HIDE) === '0') hideDone = false; } catch (e) {}
+  byId('hide-done').checked = hideDone;
+
+  function visibleRecords() {
+    if (!hideDone) return records;
+    return records.filter(function (r) { return HIDDEN_STATES.indexOf(stateOf(r)) < 0; });
+  }
+
+  /* ---- 头部信息：按登录者意向动态显示 ---- */
+  byId('m-candidate').textContent = __USER__; // 显示当前登录者昵称
+  byId('m-dir').textContent = MY_DIRS.length ? MY_DIRS.join(' / ') : '未设置';
+  byId('m-city').textContent = (PROFILE.cities || []).length
+    ? PROFILE.cities.join(' / ') : '不限城市';
+  byId('f-date').textContent = PAYLOAD.meta.verifiedDate;
+  byId('s-date').textContent = PAYLOAD.meta.verifiedDate;
+
+  /* ---- 筛选项 ---- */
+  var cats = [], cities = [], natures = [];
+  records.forEach(function (r) {
+    r.categories.forEach(function (c) { if (cats.indexOf(c) < 0) cats.push(c); });
+    r.cities.forEach(function (c) { if (cities.indexOf(c) < 0) cities.push(c); });
+    if (natures.indexOf(r.nature) < 0) natures.push(r.nature);
+  });
+  byId('s-cat').textContent = cats.length;
+
+  function renderStats() {
+    var vis = visibleRecords();
+    var hid = records.length - vis.length;
+    byId('s-emp').textContent = vis.length;
+    byId('s-hi').textContent = vis.filter(function (r) { return r.fit >= 80; }).length;
+    byId('hidden-n').textContent = hid ? '· ' + hid + ' 家' : '';
+  }
+  function fill(sel, list) {
+    list.forEach(function (v) {
+      var o = document.createElement('option');
+      o.value = v; o.textContent = v;
+      sel.appendChild(o);
+    });
+  }
+  fill(byId('f-cat'), cats);
+  fill(byId('f-city'), cities);
+  fill(byId('f-nature'), natures);
+
+  /* ---- 渲染 ---- */
+  function fitClass(n) { return n >= 80 ? 'hi' : (n >= 70 ? 'mid' : 'low'); }
+
+  function render() {
+    var q = byId('q').value.trim().toLowerCase();
+    var fdir = byId('f-dir').value;
+    var fc = byId('f-cat').value;
+    var fcity = byId('f-city').value;
+    var fn = byId('f-nature').value;
+
+    var list = visibleRecords().filter(function (r) {
+      if (fc && r.categories.indexOf(fc) < 0) return false;
+      if (fcity && r.cities.indexOf(fcity) < 0) return false;
+      if (fn && r.nature !== fn) return false;
+      if (fdir && r._dirs.indexOf(fdir) < 0) return false;
+      if (q) {
+        var hay = [r.employer, r.industry, r.roles.join(' '), r.cities.join(' '),
+                   r.categories.join(' '), r.batch, r.nature].join(' ').toLowerCase();
+        if (hay.indexOf(q) < 0) return false;
+      }
+      return true;
+    });
+
+    // 未投递的优先显示，已投递 / 流程中的往后放，已结束的沉到最后；同组内按匹配度降序
+    list.sort(function (a, b) {
+      var ra = rankOf(a), rb = rankOf(b);
+      if (ra !== rb) return ra - rb;
+      return b.fit - a.fit;
+    });
+
+    byId('cnt').textContent = list.length;
+    var tb = byId('tb');
+    tb.innerHTML = '';
+
+    if (!list.length) {
+      byId('empty').style.display = 'block';
+      byId('cap').textContent = '';
+      return;
+    }
+    byId('empty').style.display = 'none';
+
+    var shown = list.length > RENDER_CAP ? list.slice(0, RENDER_CAP) : list;
+    byId('cap').textContent = list.length > RENDER_CAP
+      ? '（已渲染前 ' + RENDER_CAP + ' 条，请用搜索或筛选缩小范围）'
+      : '';
+
+    var lastRank = -1;
+    shown.forEach(function (r) {
+      var cur = progress[r.id] || opts[0];
+      var soon = /仅剩|即将|已截止/.test(r.deadline) ? ' soon' : '';
+      var rank = rankOf(r);
+
+      // 分组分隔行：未投递 / 已投递 / 已结束
+      if (rank !== lastRank) {
+        var label = rank === 0 ? '未投递 · 优先看这些'
+                  : rank === 1 ? '已投递 / 流程中'
+                  : '已结束';
+        var sep = document.createElement('tr');
+        sep.className = 'group-sep';
+        sep.innerHTML = '<td colspan="8">' + label + '</td>';
+        tb.appendChild(sep);
+        lastRank = rank;
+      }
+
+      var tr = document.createElement('tr');
+      if (rank > 0) tr.className = 'row-done';
+      tr.innerHTML =
+        '<td data-label="企业"><div class="emp">' + esc(r.employer) + '</div>' +
+          '<div class="emp-ind">' + esc(r.industry) + '</div>' +
+          '<div class="tags" style="margin-top:5px">' + r._dirs.map(function (d) {
+            return '<span class="tag dir' + (d === '采购供应链类' ? ' sup' : '') + '">' + esc(d) + '</span>';
+          }).join('') + '</div></td>' +
+        '<td data-label="性质/规模"><div class="nature">' + esc(r.nature) + '</div>' +
+          '<div class="scale">' + esc(r.scale) + '</div></td>' +
+        '<td data-label="岗位"><div class="role">' + esc(r.roles.join('、')) + '</div>' +
+          '<div class="tags">' + r.categories.map(function (c) {
+            return '<span class="tag">' + esc(c) + '</span>';
+          }).join('') + '</div>' +
+          '<div class="scale">' + esc(r.batch) + '</div></td>' +
+        '<td data-label="城市"><div class="city">' + esc(r.cities.join(' · ')) + '</div></td>' +
+        '<td data-label="截止/时间"><div class="deadline' + soon + '">' + esc(r.deadline) + '</div></td>' +
+        '<td data-label="匹配度"><div class="fit ' + fitClass(r.fit) + '">' + r.fit + '</div>' +
+          '<div class="fit-reason" title="' + esc(r.fitReason) + '">' + esc(r.fitReason) + '</div></td>' +
+        '<td data-label="投递进度"><select class="st" data-id="' + esc(r.id) + '" data-state="' + esc(cur) + '">' +
+          opts.map(function (o) {
+            return '<option value="' + esc(o) + '"' + (o === cur ? ' selected' : '') + '>' + esc(o) + '</option>';
+          }).join('') + '</select></td>' +
+        '<td data-label="投递"><div class="ops">' +
+          '<a class="apply" href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">前往投递</a>' +
+          '<button class="btn-track" data-c="' + esc(r.employer) + '" data-r="' + esc(r.roles.join('、')) + '" data-ci="' + esc(r.cities.join(' ')) + '" data-l="' + esc(r.url) + '" title="把这条岗位一键带入我的秋招记录工具">记一笔</button>' +
+        '</div></td>';
+
+      tb.appendChild(tr);
+    });
+
+    Array.prototype.forEach.call(tb.querySelectorAll('select.st'), function (sel) {
+      sel.addEventListener('change', function () {
+        progress[sel.getAttribute('data-id')] = sel.value;
+        sel.setAttribute('data-state', sel.value);
+        try { localStorage.setItem(KEY_STORE, JSON.stringify(progress)); } catch (e) {}
+        renderStats();
+        renderProgressBar();
+        // 标记为「已放弃」后立即从列表消失（取消勾选"隐藏已放弃"即可找回）
+        if (HIDDEN_STATES.indexOf(sel.value) > -1 && hideDone) render();
+      });
+    });
+
+    Array.prototype.forEach.call(tb.querySelectorAll('.fit-reason'), function (el) {
+      el.addEventListener('click', function () { el.classList.toggle('open'); });
+    });
+
+    Array.prototype.forEach.call(tb.querySelectorAll('.btn-track'), function (btn) {
+      btn.addEventListener('click', function () {
+        var qs = new URLSearchParams({
+          company: btn.getAttribute('data-c') || '',
+          role: btn.getAttribute('data-r') || '',
+          city: btn.getAttribute('data-ci') || '',
+          link: btn.getAttribute('data-l') || ''
+        });
+        window.open(TRACKER_URL + '?' + qs.toString(), '_blank', 'noopener');
+      });
+    });
+  }
+
+  /* ---- 进度统计条 ---- */
+  function renderProgressBar() {
+    var applied = 0, active = 0, done = 0, offer = 0;
+    var activeStates = ['待测评','已测评','待笔试','已笔试','一面','二面','终面','HR面'];
+    var doneStates = ['已拒绝','已放弃'];
+    records.forEach(function (r) {
+      var s = progress[r.id] || opts[0];
+      if (s === '未投递') return;
+      if (s === 'Offer') { offer++; return; }
+      if (doneStates.indexOf(s) > -1) { done++; return; }
+      applied++;
+      if (activeStates.indexOf(s) > -1) active++;
+    });
+    byId('pbar').innerHTML =
+      '<span class="pb-title">我的进度</span>' +
+      '<span class="pb-item">已投递<b>' + applied + '</b></span>' +
+      '<span class="pb-item">流程中<b>' + active + '</b></span>' +
+      '<span class="pb-item">Offer<b>' + offer + '</b></span>' +
+      '<span class="pb-item">已结束<b>' + done + '</b></span>' +
+      '<span class="pb-item" style="color:#98a4b5">共 ' + records.length + ' 条机会，未投递 ' +
+        (records.length - applied - offer - done) + '</span>';
+  }
+
+  /* ---- 方向筛选下拉：按我的意向方向动态生成 ---- */
+  (function () {
+    var fd = byId('f-dir');
+    MY_DIRS.forEach(function (d) {
+      var o = document.createElement('option');
+      o.value = d; o.textContent = d;
+      fd.appendChild(o);
+    });
+    fd.value = MY_DIRS[0] || '';
+  })();
+
+  /* ---- 事件 ---- */
+  byId('q').addEventListener('input', render);
+  byId('f-dir').addEventListener('change', render);
+  byId('f-cat').addEventListener('change', render);
+  byId('f-city').addEventListener('change', render);
+  byId('f-nature').addEventListener('change', render);
+  byId('reset').addEventListener('click', function () {
+    byId('q').value = '';
+    byId('f-dir').value = MY_DIRS[0] || '';
+    byId('f-cat').value = '';
+    byId('f-city').value = '';
+    byId('f-nature').value = '';
+    render();
+  });
+
+  byId('hide-done').addEventListener('change', function () {
+    hideDone = this.checked;
+    try { localStorage.setItem(KEY_HIDE, hideDone ? '1' : '0'); } catch (e) {}
+    renderStats();
+    render();
+  });
+
+  /* ---- 进度导入 / 导出（旧看板迁移用） ---- */
+  function impShow(txt, isExport) {
+    byId('imp-title').textContent = isExport ? '导出进度（复制这段 JSON 保存）' : '导入进度（粘贴旧看板导出的 JSON）';
+    byId('imp-text').value = txt || '';
+    byId('imp-mask').style.display = 'flex';
+  }
+  byId('btn-exp').addEventListener('click', function () {
+    var txt = JSON.stringify(progress);
+    var done = function () { alert('已复制到剪贴板（共 ' + Object.keys(progress).length + ' 条投递标记）。'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(done, function () { impShow(txt, true); });
+    } else { impShow(txt, true); }
+  });
+  byId('btn-imp').addEventListener('click', function () { impShow('', false); });
+  byId('imp-cancel').addEventListener('click', function () { byId('imp-mask').style.display = 'none'; });
+  byId('imp-ok').addEventListener('click', function () {
+    var raw = byId('imp-text').value.trim();
+    if (!raw) { alert('内容为空'); return; }
+    var obj;
+    try { obj = JSON.parse(raw); } catch (e) { alert('不是合法 JSON，请确认复制完整'); return; }
+    if (obj && typeof obj === 'object' && obj.progress && typeof obj.progress === 'object') obj = obj.progress;
+    if (!obj || typeof obj !== 'object') { alert('格式不对'); return; }
+    var n = 0;
+    for (var k in obj) { if (typeof obj[k] === 'string') { progress[k] = obj[k]; n++; } }
+    try { localStorage.setItem(KEY_STORE, JSON.stringify(progress)); } catch (e) {}
+    byId('imp-mask').style.display = 'none';
+    renderStats(); renderProgressBar(); render();
+    alert('已导入 ' + n + ' 条投递标记，看板已刷新。');
+  });
+
+  render();
+  renderStats();
+  renderProgressBar();
+})();
+</script>
+</body>
+</html>
