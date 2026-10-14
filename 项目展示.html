@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>校招岗位智能匹配平台「上岸雷达」· 项目展示</title>
+<style>
+  :root{
+    --bg:#faf9f6;
+    --card:#ffffff;
+    --ink:#1f2329;
+    --sub:#5b6470;
+    --line:#e8e5de;
+    --accent:#2f6fed;
+    --accent-soft:#eef3fd;
+    --red:#d94f4f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei","微软雅黑",-apple-system,"Segoe UI",sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+    padding:48px 20px 72px;
+  }
+  .page{max-width:860px;margin:0 auto;}
+  /* 封面 */
+  .hero{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:44px 48px;
+    margin-bottom:24px;
+  }
+  .hero .tag{
+    display:inline-block;
+    font-size:13px;
+    color:var(--accent);
+    background:var(--accent-soft);
+    padding:4px 12px;
+    border-radius:20px;
+    margin-bottom:18px;
+    letter-spacing:.5px;
+  }
+  .hero h1{
+    font-size:30px;
+    font-weight:700;
+    letter-spacing:.5px;
+    margin-bottom:10px;
+  }
+  .hero .sub{
+    color:var(--sub);
+    font-size:15px;
+  }
+  .hero .meta{
+    margin-top:20px;
+    font-size:14px;
+    color:var(--sub);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 22px;
+  }
+  .hero .meta b{color:var(--ink);font-weight:600;}
+  /* 数字看板 */
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    margin-bottom:24px;
+  }
+  .stat{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:24px 20px;
+    text-align:center;
+  }
+  .stat .num{
+    font-size:30px;
+    font-weight:700;
+    color:var(--accent);
+    line-height:1.2;
+  }
+  .stat .num small{font-size:15px;font-weight:600;}
+  .stat .label{font-size:13px;color:var(--sub);margin-top:6px;}
+  /* 卡片区块 */
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:36px 44px;
+    margin-bottom:24px;
+  }
+  .card h2{
+    font-size:20px;
+    font-weight:700;
+    margin-bottom:20px;
+    padding-left:14px;
+    border-left:4px solid var(--accent);
+    line-height:1.4;
+  }
+  .card p{font-size:15px;color:var(--ink);margin-bottom:12px;}
+  .card p:last-child{margin-bottom:0;}
+  .card .lead{color:var(--sub);font-size:15px;margin-bottom:20px;}
+  /* 职责条目 */
+  .duty{margin-bottom:16px;padding:16px 20px;background:#fbfbfa;border-radius:10px;border:1px solid var(--line);}
+  .duty:last-child{margin-bottom:0;}
+  .duty .h{font-weight:700;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+  .duty .h::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--accent);flex-shrink:0;}
+  .duty p{font-size:14px;color:var(--sub);margin:0;}
+  /* 成果 */
+  .result{background:var(--accent-soft);border:1px solid #dbe6fb;border-radius:12px;padding:20px 24px;}
+  .result p{font-size:15px;color:var(--ink);margin:0;}
+  .result .r-title{font-weight:700;color:var(--accent);margin-bottom:8px;font-size:15px;}
+  /* 数据分布 */
+  .bars{display:flex;flex-direction:column;gap:12px;margin-top:8px;}
+  .bar{display:grid;grid-template-columns:96px 1fr 48px;align-items:center;gap:14px;font-size:13px;}
+  .bar .name{color:var(--ink);font-weight:600;text-align:right;white-space:nowrap;}
+  .bar .track{background:#f0eee9;border-radius:6px;height:20px;overflow:hidden;}
+  .bar .fill{height:100%;background:linear-gradient(90deg,#5b8bf5,#2f6fed);border-radius:6px;}
+  .bar .val{color:var(--sub);text-align:left;white-space:nowrap;}
+  /* 技术栈标签 */
+  .tech{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;}
+  .tech span{
+    font-size:13px;color:var(--ink);
+    background:#f4f2ee;border:1px solid var(--line);
+    padding:6px 14px;border-radius:8px;
+  }
+  /* 流程 */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:6px;}
+  .flow .step{
+    border:1px solid var(--line);border-radius:10px;padding:18px 12px;text-align:center;background:#fbfbfa;
+  }
+  .flow .step .n{font-size:12px;color:var(--accent);font-weight:700;margin-bottom:6px;}
+  .flow .step .t{font-size:14px;font-weight:600;}
+  .flow .step .d{font-size:12px;color:var(--sub);margin-top:4px;}
+  .footer{text-align:center;color:#9aa1ab;font-size:13px;margin-top:8px;}
+  @media(max-width:640px){
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .flow{grid-template-columns:repeat(2,1fr);}
+    .hero,.card{padding:28px 22px;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- 封面 -->
+  <div class="hero">
+    <span class="tag">个人独立开发 · 已上线</span>
+    <h1>校招岗位智能匹配平台「上岸雷达」</h1>
+    <div class="sub">为应届生提供"按求职画像智能匹配校招岗位"的一站式产品</div>
+    <div class="meta">
+      <span>开发者：<b>左子仟</b></span>
+      <span>时间：<b>2026.08 – 至今</b></span>
+      <span>角色：<b>产品 / 开发</b></span>
+      <span>目标岗位：<b>产品经理</b></span>
+    </div>
+  </div>
+
+  <!-- 核心数字 -->
+  <div class="stats">
+    <div class="stat"><div class="num">5438</div><div class="label">校招岗位总量</div></div>
+    <div class="stat"><div class="num">13</div><div class="label">岗位方向类别</div></div>
+    <div class="stat"><div class="num">30<small>+</small></div><div class="label">覆盖城市</div></div>
+    <div class="stat"><div class="num">每日</div><div class="label">自动更新频率</div></div>
+  </div>
+
+  <!-- 项目背景 -->
+  <div class="card">
+    <h2>项目背景</h2>
+    <p>校招季岗位信息分散在各企业官网与飞书汇总表中，数量庞大、格式不一，求职者难以按自身专业、意向方向与目标城市快速筛选，逐条翻找效率极低。</p>
+    <p>为此，独立打造一款多用户 Web 产品，让每位求职者填写自己的求职画像后，系统自动匹配并推荐合适的岗位，把"海量翻表"变成"精准推荐"。</p>
+  </div>
+
+  <!-- 项目职责 -->
+  <div class="card">
+    <h2>项目职责</h2>
+    <div class="lead">独立完成从需求调研到产品上线的完整闭环，覆盖产品设计与开发落地全流程。</div>
+
+    <div class="duty">
+      <div class="h">需求调研</div>
+      <p>梳理校招求职核心痛点，拆解出注册登录、求职画像、岗位库、投递进度四大模块，明确"个性化匹配"为核心价值点。</p>
+    </div>
+    <div class="duty">
+      <div class="h">产品设计</div>
+      <p>定义 13 类岗位方向，结合专业、目标城市、是否接受笔试等维度构建求职画像，设计"匹配分 + 匹配理由"的推荐呈现方式。</p>
+    </div>
+    <div class="duty">
+      <div class="h">数据建设</div>
+      <p>对接飞书《27 届校招汇总表》，构建 5438 条覆盖全方向的岗位数据库，并设定每日自动更新机制，保障信息时效性。</p>
+    </div>
+    <div class="duty">
+      <div class="h">开发落地</div>
+      <p>独立完成前后端开发与部署上线，实现多用户注册与数据隔离，跑通从需求到上线的完整闭环。</p>
+    </div>
+  </div>
+
+  <!-- 项目成果 -->
+  <div class="card">
+    <h2>项目成果</h2>
+    <div class="result">
+      <div class="r-title">已上线公开访问，实现完整求职流程闭环</div>
+      <p>产品聚合 <b>5438 条</b>全方向校招岗位、覆盖 <b>13 类</b>方向与 <b>30+</b> 城市，实现每日自动更新与个性化匹配推荐，覆盖从注册登录到投递跟踪的完整求职流程，将筛岗从"逐条翻表"缩短为"按画像秒级筛选"。</p>
+    </div>
+  </div>
+
+  <!-- 岗位数据分布 -->
+  <div class="card">
+    <h2>岗位数据分布</h2>
+    <div class="bars">
+      <div class="bar"><span class="name">技术研发类</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">2662</span></div>
+      <div class="bar"><span class="name">制造工艺类</span><span class="track"><span class="fill" style="width:95%"></span></span><span class="val">2533</span></div>
+      <div class="bar"><span class="name">设计类</span><span class="track"><span class="fill" style="width:61%"></span></span><span class="val">1617</span></div>
+      <div class="bar"><span class="name">产品类</span><span class="track"><span class="fill" style="width:46%"></span></span><span class="val">1229</span></div>
+      <div class="bar"><span class="name">管培生</span><span class="track"><span class="fill" style="width:39%"></span></span><span class="val">1033</span></div>
+      <div class="bar"><span class="name">运营类</span><span class="track"><span class="fill" style="width:36%"></span></span><span class="val">968</span></div>
+    </div>
+  </div>
+
+  <!-- 核心功能流程 -->
+  <div class="card">
+    <h2>核心功能流程</h2>
+    <div class="flow">
+      <div class="step"><div class="n">STEP 1</div><div class="t">注册登录</div><div class="d">昵称 + 口令</div></div>
+      <div class="step"><div class="n">STEP 2</div><div class="t">填写画像</div><div class="d">专业 / 方向 / 城市</div></div>
+      <div class="step"><div class="n">STEP 3</div><div class="t">智能匹配</div><div class="d">匹配分 + 理由</div></div>
+      <div class="step"><div class="n">STEP 4</div><div class="t">投递跟踪</div><div class="d">进度记录管理</div></div>
+    </div>
+  </div>
+
+  <!-- 技术栈 -->
+  <div class="card">
+    <h2>技术栈</h2>
+    <div class="tech">
+      <span>Python</span>
+      <span>Flask</span>
+      <span>SQLite</span>
+      <span>HTML / CSS / JavaScript</span>
+      <span>飞书开放平台 API</span>
+    </div>
+  </div>
+
+  <div class="footer">校招岗位智能匹配平台「上岸雷达」· 个人独立开发项目展示</div>
+</div>
+</body>
+</html>
