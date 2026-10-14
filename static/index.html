@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上岸雷达 · 投递记录</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --border:#e5e9f2; --text:#1f2937; --muted:#6b7280;
+    --primary:#4f46e5; --danger:#ef4444;
+    --shadow:0 1px 3px rgba(16,24,40,.06),0 1px 2px rgba(16,24,40,.04);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:980px;margin:0 auto;padding:28px 20px 60px;}
+  header{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+  h1{font-size:22px;font-weight:700;letter-spacing:-.2px;}
+  .sub{color:var(--muted);font-size:13px;margin-top:4px;}
+  .badge-private{display:inline-block;font-size:11px;font-weight:600;color:#7c3aed;background:#f3e8ff;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px;}
+  .btn{border:none;cursor:pointer;border-radius:10px;font-size:14px;font-weight:600;padding:10px 16px;transition:all .15s ease;}
+  .btn-primary{background:var(--primary);color:#fff;}
+  .btn-primary:hover{background:#4338ca;}
+  .btn-ghost{background:#fff;color:var(--text);border:1px solid var(--border);}
+  .btn-ghost:hover{border-color:#c7cede;}
+  .rem-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px;box-shadow:var(--shadow);}
+  .rem-title{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .rem-count{font-size:12px;font-weight:600;color:#fff;background:var(--primary);border-radius:999px;padding:1px 9px;}
+  .rem-empty{color:var(--muted);font-size:13px;padding:6px 0;}
+  .rem-group{margin-bottom:10px;}
+  .rem-group-title{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;}
+  .rem-group-title.overdue{color:var(--danger);}
+  .rem-group-title.today{color:#b45309;}
+  .rem-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;background:#fafbfd;margin-bottom:5px;font-size:13px;}
+  .rem-item.today{background:#fef3c7;border:1px solid #fde68a;}
+  .rem-item.overdue{background:#fee2e2;border:1px solid #fecaca;}
+  .rem-date{font-size:12px;color:var(--muted);min-width:44px;}
+  .rem-co{font-weight:600;}
+  .rem-next{color:var(--muted);}
+  .funnel-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px;box-shadow:var(--shadow);}
+  .funnel-title{font-size:15px;font-weight:600;margin-bottom:12px;}
+  .funnel-empty{color:var(--muted);font-size:13px;padding:4px 0;}
+  .f-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .f-bar{color:#fff;font-size:13px;font-weight:600;border-radius:7px;padding:6px 12px;white-space:nowrap;transition:width .3s ease;}
+  .f-rate{font-size:12px;color:var(--muted);}
+  .f-insight{margin-top:12px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:13px;color:#166534;}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+  .stat .num{font-size:28px;font-weight:700;letter-spacing:-.5px;}
+  .stat .lbl{color:var(--muted);font-size:12.5px;margin-top:2px;}
+  .stat.t-total .num{color:var(--primary);}
+  .stat.t-active .num{color:#2563eb;}
+  .stat.t-offer .num{color:#16a34a;}
+  .stat.t-rej .num{color:var(--danger);}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+  .chip{border:1px solid var(--border);background:#fff;color:var(--muted);border-radius:999px;padding:6px 14px;font-size:13px;cursor:pointer;transition:all .15s ease;font-weight:500;}
+  .chip:hover{border-color:#c7cede;}
+  .chip.on{background:var(--primary);color:#fff;border-color:var(--primary);}
+  .list{display:flex;flex-direction:column;gap:12px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+  .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+  .co{font-size:16px;font-weight:700;}
+  .role{color:var(--muted);font-size:13px;margin-top:2px;}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .tag{font-size:12px;color:var(--muted);background:#f3f4f6;border-radius:6px;padding:3px 8px;}
+  .tag.remind{background:#fef3c7;color:#b45309;font-weight:600;}
+  .badge{font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap;}
+  .next{margin-top:12px;padding:10px 12px;background:#fafbfd;border-left:3px solid var(--primary);border-radius:6px;font-size:13px;color:#374151;}
+  .next b{color:var(--primary);}
+  .note{font-size:12.5px;color:var(--muted);margin-top:8px;}
+  .ops{display:flex;gap:8px;flex-shrink:0;}
+  .icon-btn{border:1px solid var(--border);background:#fff;border-radius:8px;cursor:pointer;font-size:12px;padding:5px 10px;color:var(--muted);transition:all .15s ease;}
+  .icon-btn:hover{border-color:#c7cede;color:var(--text);}
+  .icon-btn.del:hover{border-color:#fca5a5;color:var(--danger);}
+  .empty{text-align:center;padding:60px 20px;color:var(--muted);}
+  .empty .big{font-size:40px;margin-bottom:10px;}
+  .empty p{font-size:14px;}
+  .empty .hint{font-size:12.5px;margin-top:6px;}
+  .toolbar{display:flex;gap:8px;margin-top:24px;justify-content:flex-end;}
+  .mask{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;}
+  .mask.show{display:flex;}
+  .modal{background:#fff;border-radius:16px;width:100%;max-width:520px;max-height:90vh;overflow:auto;padding:22px 24px;}
+  .modal h2{font-size:17px;margin-bottom:6px;}
+  .modal .sub{font-size:12.5px;color:var(--muted);margin-bottom:18px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#374151;}
+  .field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:9px 12px;font-size:14px;font-family:inherit;color:var(--text);background:#fbfcfe;}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--primary);background:#fff;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .modal-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+  .lock-tip{font-size:12px;color:var(--muted);background:#fafbfd;border:1px dashed var(--border);border-radius:8px;padding:8px 12px;margin-top:16px;line-height:1.6;}
+  .features{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 6px;}
+  .feat{display:flex;gap:10px;align-items:flex-start;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:11px 12px;}
+  .feat-ico{font-size:20px;line-height:1.2;}
+  .feat b{font-size:13.5px;display:block;}
+  .feat p{font-size:12px;color:var(--muted);margin:2px 0 0;line-height:1.45;}
+  @media(max-width:480px){.features{grid-template-columns:1fr;}}
+  .st-已投递{background:#eef2f7;color:#64748b;}
+  .st-笔试{background:#f3e8ff;color:#7c3aed;}
+  .st-一面{background:#dbeafe;color:#1d4ed8;}
+  .st-二面{background:#e0f2fe;color:#0284c7;}
+  .st-终面{background:#e0e7ff;color:#4f46e5;}
+  .st-offer{background:#dcfce7;color:#15803d;}
+  .st-已拒{background:#fee2e2;color:#dc2626;}
+  .st-挂起{background:#fef3c7;color:#b45309;}
+  @media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr);}.row2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app" style="display:none;">
+  <header>
+    <div>
+      <h1>上岸雷达 · 投递本<span class="badge-private">仅自己可见</span></h1>
+      <div class="sub" id="hello">你好，同学 · <a href="/" style="color:var(--primary);text-decoration:none;font-weight:600">📋 岗位库看板 →</a></div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-ghost" onclick="load()">刷新</button>
+      <button class="btn btn-ghost" onclick="logout()">退出</button>
+      <button class="btn btn-primary" onclick="openModal()">＋ 添加投递</button>
+    </div>
+  </header>
+
+  <div id="reminders"></div>
+
+  <div class="stats">
+    <div class="stat t-total"><div class="num" id="s-total">0</div><div class="lbl">我的总投递</div></div>
+    <div class="stat t-active"><div class="num" id="s-active">0</div><div class="lbl">进行中</div></div>
+    <div class="stat t-offer"><div class="num" id="s-offer">0</div><div class="lbl">Offer</div></div>
+    <div class="stat t-rej"><div class="num" id="s-rej">0</div><div class="lbl">已结束（拒/放弃）</div></div>
+  </div>
+
+  <div id="funnel"></div>
+
+  <div class="filters" id="filters"></div>
+
+  <div class="list" id="list"></div>
+
+  <div class="toolbar">
+    <button class="btn btn-ghost" onclick="exportCSV()">导出 CSV</button>
+  </div>
+</div>
+
+<div class="mask show" id="welcome">
+  <div class="modal" style="max-width:460px;">
+    <h2>上岸雷达 · 投递记录</h2>
+    <div class="sub">一个帮你把求职进度管清楚的免费工具，开箱即用</div>
+
+    <div class="features">
+      <div class="feat"><span class="feat-ico">📋</span><div><b>投递记录</b><p>公司 / 岗位 / 城市 / 状态，一条不漏</p></div></div>
+      <div class="feat"><span class="feat-ico">📈</span><div><b>转化漏斗</b><p>投递→笔试→面试→Offer，看卡在哪一关</p></div></div>
+      <div class="feat"><span class="feat-ico">📌</span><div><b>待办提醒</b><p>设个日期，到点自动顶上来催你跟进</p></div></div>
+      <div class="feat"><span class="feat-ico">📤</span><div><b>一键导出</b><p>随时导出 CSV 备份你的全部记录</p></div></div>
+    </div>
+
+    <div class="field"><label>你的昵称</label><input id="w-name" placeholder="如：小左"></div>
+    <div class="field"><label>设置一个口令</label><input id="w-pass" type="password" placeholder="随便设一个，下次用同一口令找回"></div>
+    <div class="modal-foot">
+      <button class="btn btn-primary" onclick="login()">免费开始使用</button>
+    </div>
+    <div class="lock-tip">不用注册、不用邮箱手机。口令只是区分你和其他人数据的钥匙，不是账号密码——换设备时输入「同样的昵称 + 口令」即可找回你的记录，别人看不到。</div>
+  </div>
+</div>
+
+<div class="mask" id="mask">
+  <div class="modal">
+    <h2 id="modal-title">添加投递记录</h2>
+    <input type="hidden" id="f-id">
+    <div class="field"><label>公司名称 *</label><input id="f-company" placeholder="如：某某科技有限公司"></div>
+    <div class="field"><label>岗位</label><input id="f-role" placeholder="如：产品经理 / 质量管理工程师"></div>
+    <div class="row2">
+      <div class="field"><label>城市</label><input id="f-city" placeholder="如：上海"></div>
+      <div class="field"><label>投递渠道</label>
+        <select id="f-channel">
+          <option value="官网">官网</option>
+          <option value="内推">内推</option>
+          <option value="招聘平台">招聘平台</option>
+          <option value="宣讲会">宣讲会</option>
+          <option value="其他">其他</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>投递日期</label><input type="date" id="f-date"></div>
+      <div class="field"><label>进度状态</label>
+        <select id="f-status">
+          <option value="已投递">已投递</option>
+          <option value="笔试">笔试</option>
+          <option value="一面">一面</option>
+          <option value="二面">二面</option>
+          <option value="终面">终面</option>
+          <option value="Offer">Offer</option>
+          <option value="已拒">已拒</option>
+          <option value="挂起">挂起</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>下一步动作</label><input id="f-next" placeholder="如：准备二面 / 跟进 HR 结果"></div>
+    <div class="field"><label>下次提醒日期</label><input type="date" id="f-remind"><div style="font-size:12px;color:var(--muted);margin-top:4px;">到这一天，看板会把它顶到「待办提醒」里催你</div></div>
+    <div class="field"><label>备注</label><textarea id="f-note" rows="2" placeholder="如：面经要点、联系人、薪资范围"></textarea></div>
+    <div class="field"><label>JD / 官网链接</label><input id="f-link" placeholder="https://"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="save()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STATUSES = ["已投递","笔试","一面","二面","终面","Offer","已拒","挂起"];
+  const ACTIVE = ["已投递","笔试","一面","二面","终面"];
+  const END = ["已拒"];
+  const UK_KEY = "jobtrack_uk_v3";
+  const NAME_KEY = "jobtrack_name_v3";
+  let data = [];
+  let filter = "全部";
+  let userKey = localStorage.getItem(UK_KEY) || "";
+  let userName = localStorage.getItem(NAME_KEY) || "";
+
+  async function sha256(str){
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+  }
+  async function login(){
+    const name = document.getElementById("w-name").value.trim();
+    const pass = document.getElementById("w-pass").value.trim();
+    if(!name || !pass){ alert("请填写昵称和口令"); return; }
+    userKey = await sha256(name + "::" + pass);
+    userName = name;
+    localStorage.setItem(UK_KEY, userKey);
+    localStorage.setItem(NAME_KEY, userName);
+    enterApp();
+  }
+  function logout(){
+    localStorage.removeItem(UK_KEY); localStorage.removeItem(NAME_KEY);
+    userKey = ""; userName = "";
+    fetch("/api/logout").finally(()=>{ location.href = "/tracker"; });
+  }
+  function enterApp(){
+    document.getElementById("welcome").classList.remove("show");
+    document.getElementById("app").style.display = "block";
+    document.getElementById("hello").textContent = "你好，" + escapeHtml(userName) + "，这是你的私密看板";
+    load();
+    applyPrefill();
+  }
+  // 从校招看板「记一笔」跳转而来时，读取 URL 参数自动预填表单
+  function readPrefill(){
+    const p = new URLSearchParams(location.search);
+    const d = {
+      company: p.get("company") || "",
+      role: p.get("role") || "",
+      city: p.get("city") || "",
+      link: p.get("link") || ""
+    };
+    return (d.company || d.role || d.link) ? d : null;
+  }
+  function applyPrefill(){
+    const d = readPrefill();
+    if(!d) return;
+    openModal();
+    document.getElementById("f-company").value = d.company || "";
+    document.getElementById("f-role").value = d.role || "";
+    document.getElementById("f-city").value = d.city || "";
+    document.getElementById("f-link").value = d.link || "";
+    // 清掉 URL 参数，避免刷新后重复弹窗
+    history.replaceState(null, "", location.pathname);
+  }
+  async function api(path, method="GET", body=null){
+    const opt = {method, headers:{}};
+    if(body){ opt.headers["Content-Type"]="application/json"; opt.body = JSON.stringify(body); }
+    const r = await fetch(path, opt);
+    if(!r.ok){ const e = await r.json().catch(()=>({error:"请求失败"})); throw new Error(e.error||"请求失败"); }
+    return r.json();
+  }
+  async function load(){
+    if(!userKey) return;
+    try{ data = await api("/api/records?user_key=" + userKey); render(); }
+    catch(e){ document.getElementById("list").innerHTML = `<div class="empty"><div class="big">⚠️</div><p>加载失败：${escapeHtml(e.message)}</p></div>`; }
+  }
+  function todayStr(){
+    const d = new Date();
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  function plusDaysStr(n){
+    const d = new Date(); d.setDate(d.getDate()+n);
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  function render(){
+    const s = {total:0,active:0,offer:0,rej:0};
+    data.forEach(d=>{ s.total++; if(d.status==="Offer") s.offer++; if(END.includes(d.status)) s.rej++; if(ACTIVE.includes(d.status)) s.active++; });
+    document.getElementById("s-total").textContent = s.total;
+    document.getElementById("s-active").textContent = s.active;
+    document.getElementById("s-offer").textContent = s.offer;
+    document.getElementById("s-rej").textContent = s.rej;
+    renderReminders(); renderFunnel(); renderFilters(); renderList();
+  }
+  function renderReminders(){
+    const el = document.getElementById("reminders");
+    const today = todayStr(); const weekEnd = plusDaysStr(7);
+    const items = data.filter(d=>d.remind_date).sort((a,b)=>a.remind_date.localeCompare(b.remind_date));
+    if(items.length===0){
+      el.innerHTML = `<div class="rem-box"><div class="rem-title">📌 待办提醒</div><div class="rem-empty">给投递加上「下次提醒日期」，我会按时提醒你跟进</div></div>`;
+      return;
+    }
+    const overdue = items.filter(d=>d.remind_date < today);
+    const todayItems = items.filter(d=>d.remind_date === today);
+    const upcoming = items.filter(d=>d.remind_date > today && d.remind_date <= weekEnd);
+    const remItem = (d,cls)=>{
+      const label = d.next || "跟进";
+      return `<div class="rem-item ${cls}"><span class="rem-date">${escapeHtml(d.remind_date.slice(5))}</span><span class="rem-co">${escapeHtml(d.company)}</span><span class="rem-next">${escapeHtml(label)}</span></div>`;
+    };
+    let html = `<div class="rem-box"><div class="rem-title">📌 待办提醒 <span class="rem-count">${items.length} 件</span></div>`;
+    if(overdue.length) html += `<div class="rem-group"><div class="rem-group-title overdue">已逾期（该跟进了）</div>${overdue.map(d=>remItem(d,"overdue")).join("")}</div>`;
+    if(todayItems.length) html += `<div class="rem-group"><div class="rem-group-title today">今天</div>${todayItems.map(d=>remItem(d,"today")).join("")}</div>`;
+    if(upcoming.length) html += `<div class="rem-group"><div class="rem-group-title">未来 7 天</div>${upcoming.map(d=>remItem(d,"")).join("")}</div>`;
+    html += `</div>`;
+    el.innerHTML = html;
+  }
+  function funnelData(){
+    const total = data.length;
+    const intoExam = data.filter(d=>["笔试","一面","二面","终面","Offer"].includes(d.status)).length;
+    const intoInterview = data.filter(d=>["一面","二面","终面","Offer"].includes(d.status)).length;
+    const offer = data.filter(d=>d.status==="Offer").length;
+    const r1 = total ? Math.round(intoExam/total*100) : 0;
+    const r2 = intoExam ? Math.round(intoInterview/intoExam*100) : 0;
+    const r3 = intoInterview ? Math.round(offer/intoInterview*100) : 0;
+    return {total, intoExam, intoInterview, offer, r1, r2, r3};
+  }
+  function renderFunnel(){
+    const f = funnelData();
+    const el = document.getElementById("funnel");
+    if(f.total===0){
+      el.innerHTML = `<div class="funnel-box"><div class="funnel-title">📈 转化漏斗</div><div class="funnel-empty">记录投递后，这里会显示你的求职转化情况和卡点</div></div>`;
+      return;
+    }
+    const layers = [
+      {label:"投递", num:f.total, color:"#4f46e5"},
+      {label:"进笔试", num:f.intoExam, color:"#7c3aed"},
+      {label:"进面试", num:f.intoInterview, color:"#2563eb"},
+      {label:"Offer", num:f.offer, color:"#16a34a"},
+    ];
+    const max = Math.max(f.total,1);
+    const rates = [f.r1,f.r2,f.r3];
+    const bars = layers.map((l,i)=>{
+      const w = Math.max(14, Math.round(l.num/max*100));
+      const rate = i<3 ? `<span class="f-rate">↓ ${rates[i]}%</span>` : "";
+      return `<div class="f-row"><div class="f-bar" style="width:${w}%;background:${l.color};">${l.label} ${l.num}</div>${rate}</div>`;
+    }).join("");
+    el.innerHTML = `<div class="funnel-box"><div class="funnel-title">📈 转化漏斗</div>${bars}<div class="f-insight">💡 ${insight(f)}</div></div>`;
+  }
+  function insight(f){
+    if(f.total < 5) return "数据还不多，再多记录几家，趋势会更准";
+    const steps = [
+      {name:"投递→笔试", rate:f.r1, tip:"简历筛选这一关偏弱，建议优化简历、调整投递目标"},
+      {name:"笔试→面试", rate:f.r2, tip:"笔试这一关偏弱，建议针对性刷题、复盘错题"},
+      {name:"面试→Offer", rate:f.r3, tip:"面试这一关偏弱，建议复盘面经、加强结构化表达"},
+    ];
+    const valid = steps.filter((s,i)=> (i===0 ? f.total>0 : i===1 ? f.intoExam>0 : f.intoInterview>0));
+    if(valid.length===0) return "继续推进，记录更多结果";
+    valid.sort((a,b)=>a.rate-b.rate);
+    return `${valid[0].name}转化率最低（${valid[0].rate}%），${valid[0].tip}`;
+  }
+  function renderFilters(){
+    const f = document.getElementById("filters");
+    const tabs = ["全部","进行中","Offer","已拒","挂起"];
+    f.innerHTML = tabs.map(t=>`<span class="chip ${filter===t?'on':''}" onclick="setFilter('${t}')">${t}</span>`).join("");
+  }
+  function renderList(){
+    const list = document.getElementById("list");
+    let items = data.slice();
+    if(filter==="进行中") items = items.filter(d=>ACTIVE.includes(d.status));
+    else if(filter==="Offer") items = items.filter(d=>d.status==="Offer");
+    else if(filter==="已拒") items = items.filter(d=>END.includes(d.status));
+    else if(filter==="挂起") items = items.filter(d=>d.status==="挂起");
+    items.sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+    if(items.length===0){
+      list.innerHTML = `<div class="empty"><div class="big">📋</div><p>还没有投递记录</p><p class="hint">点击右上角「添加投递」开始记录，只有你自己能看到</p></div>`;
+      return;
+    }
+    list.innerHTML = items.map(d=>{
+      const meta = [d.city, d.channel, d.date].filter(Boolean).map(x=>`<span class="tag">${x}</span>`).join("");
+      const remind = d.remind_date ? `<span class="tag remind">📌 提醒 ${escapeHtml(d.remind_date.slice(5))}</span>` : "";
+      const link = d.link ? `<span class="tag"><a href="${escapeHtml(d.link)}" target="_blank" style="color:var(--primary);text-decoration:none;">查看 JD ↗</a></span>` : "";
+      const next = d.next ? `<div class="next"><b>下一步：</b>${escapeHtml(d.next)}</div>` : "";
+      const note = d.note ? `<div class="note">备注：${escapeHtml(d.note)}</div>` : "";
+      return `<div class="card">
+        <div class="card-top">
+          <div><div class="co">${escapeHtml(d.company)}</div>${d.role?`<div class="role">${escapeHtml(d.role)}</div>`:""}</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="badge st-${d.status}">${d.status}</span>
+            <div class="ops"><button class="icon-btn" onclick="editItem('${d.id}')">编辑</button><button class="icon-btn del" onclick="delItem('${d.id}','${escapeHtml(d.company||'')}')">删除</button></div>
+          </div>
+        </div>
+        <div class="meta">${meta}${remind}${link}</div>
+        ${next}${note}
+      </div>`;
+    }).join("");
+  }
+  function setFilter(t){ filter = t; render(); }
+  function escapeHtml(s){ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  function openModal(id){
+    document.getElementById("mask").classList.add("show");
+    document.getElementById("modal-title").textContent = id ? "编辑投递记录" : "添加投递记录";
+    document.getElementById("f-id").value = id || "";
+    document.getElementById("f-company").value = "";
+    document.getElementById("f-role").value = "";
+    document.getElementById("f-city").value = "";
+    document.getElementById("f-channel").value = "官网";
+    document.getElementById("f-date").value = new Date().toISOString().slice(0,10);
+    document.getElementById("f-status").value = "已投递";
+    document.getElementById("f-next").value = "";
+    document.getElementById("f-remind").value = "";
+    document.getElementById("f-note").value = "";
+    document.getElementById("f-link").value = "";
+    if(id){
+      const d = data.find(x=>x.id===id);
+      if(d){
+        document.getElementById("f-company").value = d.company||"";
+        document.getElementById("f-role").value = d.role||"";
+        document.getElementById("f-city").value = d.city||"";
+        document.getElementById("f-channel").value = d.channel||"官网";
+        document.getElementById("f-date").value = d.date||"";
+        document.getElementById("f-status").value = d.status||"已投递";
+        document.getElementById("f-next").value = d.next||"";
+        document.getElementById("f-remind").value = d.remind_date||"";
+        document.getElementById("f-note").value = d.note||"";
+        document.getElementById("f-link").value = d.link||"";
+      }
+    }
+  }
+  function closeModal(){ document.getElementById("mask").classList.remove("show"); }
+  async function save(){
+    const company = document.getElementById("f-company").value.trim();
+    if(!company){ alert("请填写公司名称"); return; }
+    const obj = {
+      company,
+      role: document.getElementById("f-role").value.trim(),
+      city: document.getElementById("f-city").value.trim(),
+      channel: document.getElementById("f-channel").value,
+      date: document.getElementById("f-date").value,
+      status: document.getElementById("f-status").value,
+      next: document.getElementById("f-next").value.trim(),
+      remind_date: document.getElementById("f-remind").value,
+      note: document.getElementById("f-note").value.trim(),
+      link: document.getElementById("f-link").value.trim(),
+      user_key: userKey,
+    };
+    const id = document.getElementById("f-id").value;
+    try{
+      if(id){ await api("/api/records/"+id, "PUT", obj); }
+      else{ await api("/api/records", "POST", obj); }
+      closeModal(); load();
+    }catch(e){ alert("保存失败："+e.message); }
+  }
+  function editItem(id){ openModal(id); }
+  async function delItem(id, company){
+    if(!confirm(`确认删除「${company}」这条记录？`)) return;
+    try{ await api("/api/records/"+id+"?user_key="+userKey, "DELETE"); load(); }
+    catch(e){ alert("删除失败："+e.message); }
+  }
+  function exportCSV(){
+    if(data.length===0){ alert("暂无数据可导出"); return; }
+    const head = ["公司","岗位","城市","渠道","投递日期","状态","下一步","提醒日期","备注","链接"];
+    const rows = data.map(d=>[d.company,d.role,d.city,d.channel,d.date,d.status,d.next,d.remind_date,d.note,d.link]);
+    const csv = [head,...rows].map(r=>r.map(c=>`"${String(c??"").replace(/"/g,'""')}"`).join(",")).join("\n");
+    const blob = new Blob(["\ufeff"+csv], {type:"text/csv;charset=utf-8"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "秋招投递记录.csv"; a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  document.getElementById("mask").addEventListener("click",e=>{ if(e.target.id==="mask") closeModal(); });
+  // 统一登录：从看板登录态（cookie）取身份，取到直接进入，不再弹欢迎窗
+  (async function boot(){
+    try{
+      const r = await fetch("/api/me");
+      if(r.ok){
+        const me = await r.json();
+        userKey = me.user_key; userName = me.name;
+        localStorage.setItem(UK_KEY, userKey); localStorage.setItem(NAME_KEY, userName);
+        enterApp(); return;
+      }
+    }catch(e){}
+    if(userKey){ enterApp(); } else { document.getElementById("welcome").classList.add("show"); }
+  })();
+</script>
+</body>
+</html>
