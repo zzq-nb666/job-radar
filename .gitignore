@@ -1,0 +1,32 @@
+# 敏感数据 / 密钥：绝不提交
+campus_secret.json
+
+# 岗位数据（每日同步生成，不入库；运行时由同步脚本产出）
+campus_data.json
+
+# SQLite 数据库（含真实用户投递记录）
+data.db
+data.db-wal
+data.db-shm
+*.db
+
+# 用户个人进度数据
+static/full_progress.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv/
+venv/
+
+# 系统 / 编辑器
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+
+# 本地构建产物
+*.pdf
